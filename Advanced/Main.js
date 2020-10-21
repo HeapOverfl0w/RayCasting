@@ -13,7 +13,7 @@ class Main
                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
     this.level = new Level(demoLevel);
     this.camera = new Camera(this.level.width/2, this.level.height/2, 0, 100);
-    this.rayCaster = new RayCaster(90);
+    this.rayCaster = new RayCaster(15);
     this.FPS = 30;
   }
 
