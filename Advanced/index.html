@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Raycasting Demo</title>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div style="display:none;">
+      <img id="walls" src="./resources/walls.png"/>
+      <img id="billboards" src="./resources/billboards.png"/>
+    </div>
+  </body>
+</html>
+<script src="Main.js"></script>
+<script src="Camera.js"></script>
+<script src="Level.js"></script>
+<script src="RayCaster.js"></script>
+<script>
+  var cvs = document.getElementById("scene");
+  var main;
+
+  window.onload = function() {
+    cvs.width = 640;
+    cvs.height = 360;
+    cvs.style.width = window.innerWidth + "px";
+    cvs.style.height = window.innerHeight + "px";
+    let ctx = cvs.getContext("2d");
+
+    main = new Main(ctx);
+    main.initialize();
+  };
+
+  window.onresize = function(){
+    cvs.style.width = window.innerWidth + "px";
+    cvs.style.height = window.innerHeight + "px";
+  };
+
+  document.addEventListener('keydown', function(event) {
+    main.handleKeyDown(event.keyCode);
+  });
+</script>
