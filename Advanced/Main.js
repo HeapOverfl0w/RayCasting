@@ -12,9 +12,11 @@ class Main
                      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
     this.level = new Level(demoLevel);
-    this.camera = new Camera(this.level.width/2, this.level.height/2, 0, 100);
+    this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * 0.4, 5);
     this.rayCaster = new RayCaster(15);
-    this.FPS = 30;
+    this.FPS = 60;
+
+    this.keysDown = [];
   }
 
   initialize()
@@ -24,11 +26,27 @@ class Main
 
   update(main)
   {
+    for (let k = 0; k < main.keysDown.length; k++)
+      main.camera.handleKeyDown(main.keysDown[k], main.level, 1/main.FPS);
     main.rayCaster.draw(main.ctx, main.camera, main.level);
   }
 
   handleKeyDown(keyCode)
   {
-    this.camera.handleKeyDown(keyCode, this.level);
+    if (!this.keysDown.includes(keyCode))
+      this.keysDown.push(keyCode);
+  }
+
+  handleKeyUp(keyCode)
+  {
+    let removeAt = -1;
+    for(let k = 0; k < this.keysDown.length; k++)
+    {
+      if (this.keysDown[k] == keyCode)
+        removeAt = k;
+    }
+    
+    if (removeAt != -1)
+      this.keysDown.splice(removeAt,1);
   }
 }

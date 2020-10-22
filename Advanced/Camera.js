@@ -1,42 +1,43 @@
 class Camera
 {
-  constructor(startX, startY, startAngle, fov)
+  constructor(startX, startY, startAngle, fov, speed)
   {
     this.x = startX;
     this.y = startY;
     this.angle = startAngle;
-    this.fov = fov * Math.PI / 180;
+    this.fov = fov;
+    this.speed = speed;
   }
 
-  handleKeyDown(keyCode, level)
+  handleKeyDown(keyCode, level, updateInterval)
   {
     if (keyCode == 87)
     { //W
-      this.x += Math.sin(this.angle) * 0.1;
-      this.y += Math.cos(this.angle) * 0.1;
+      this.x += Math.sin(this.angle) * this.speed * updateInterval;
+      this.y += Math.cos(this.angle) * this.speed * updateInterval;
       if (level.isWall(Math.floor(this.x), Math.floor(this.y)))
       {
-        this.x -= Math.sin(this.angle) * 0.1;
-        this.y -= Math.cos(this.angle) * 0.1;
+        this.x -= Math.sin(this.angle) * this.speed * updateInterval;
+        this.y -= Math.cos(this.angle) * this.speed * updateInterval;
       }
     }
     if (keyCode == 83)
     { //S
-      this.x -= Math.sin(this.angle) * 0.1;
-      this.y -= Math.cos(this.angle) * 0.1;
+      this.x -= Math.sin(this.angle) * this.speed * updateInterval;
+      this.y -= Math.cos(this.angle) * this.speed * updateInterval;
       if (level.isWall(Math.floor(this.x), Math.floor(this.y)))
       {
-        this.x += Math.sin(this.angle) * 0.1;
-        this.y += Math.cos(this.angle) * 0.1;
+        this.x += Math.sin(this.angle) * this.speed * updateInterval;
+        this.y += Math.cos(this.angle) * this.speed * updateInterval;
       }
     }
     if (keyCode == 65)
     { //A
-      this.angle -= 0.1;
+      this.angle -= 2 * updateInterval;
     }
     if (keyCode == 68)
     { //D
-      this.angle += 0.1;
+      this.angle += 2 * updateInterval;
     }
   }
 }
