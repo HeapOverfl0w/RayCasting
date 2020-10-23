@@ -12,9 +12,9 @@ class Main
                      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
     this.level = new Level(demoLevel);
-    this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * 0.4, 5);
-    this.rayCaster = new RayCaster(15);
-    this.FPS = 60;
+    this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * (4/18), 5);
+    this.rayCaster = new RayCaster(5, false, "#000000");
+    this.FPS = 20;
 
     this.keysDown = [];
   }

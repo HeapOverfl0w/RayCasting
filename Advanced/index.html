@@ -19,9 +19,10 @@
   var main;
 
   window.onload = function() {
-    cvs.width = 640;
-    cvs.height = 360;
-    cvs.style.width = window.innerWidth + "px";
+    cvs.width = 240;
+    cvs.height = 180;
+    let aspectRatio = cvs.width / cvs.height;
+    cvs.style.width = window.innerHeight * aspectRatio + "px";
     cvs.style.height = window.innerHeight + "px";
     let ctx = cvs.getContext("2d");
 
@@ -30,7 +31,8 @@
   };
 
   window.onresize = function(){
-    cvs.style.width = window.innerWidth + "px";
+    let aspectRatio = cvs.width / cvs.height;
+    cvs.style.width = window.innerHeight * aspectRatio + "px";
     cvs.style.height = window.innerHeight + "px";
   };
 

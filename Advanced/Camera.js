@@ -7,6 +7,7 @@ class Camera
     this.angle = startAngle;
     this.fov = fov;
     this.speed = speed;
+    this.height = 16;
   }
 
   handleKeyDown(keyCode, level, updateInterval)
