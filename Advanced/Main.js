@@ -15,6 +15,8 @@ class Main
     this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * (4/18), 5);
     this.rayCaster = new RayCaster(12, true, "#101010");
     this.FPS = 30;
+    this.fpsCounter = 0;
+    this.lastSecond = new Date().getTime();
 
     this.keysDown = [];
   }
@@ -29,6 +31,14 @@ class Main
     for (let k = 0; k < main.keysDown.length; k++)
       main.camera.handleKeyDown(main.keysDown[k], main.level, 1/main.FPS);
     main.rayCaster.draw(main.ctx, main.camera, main.level);
+
+    main.fpsCounter++;
+    if (new Date().getTime() - main.lastSecond > 1000)
+    {
+      console.log(main.fpsCounter);
+      main.fpsCounter = 0;
+      main.lastSecond = new Date().getTime();
+    }
   }
 
   handleKeyDown(keyCode)
