@@ -1,12 +1,14 @@
 <html>
   <head>
     <title>Raycasting Demo</title>
+    <link rel="stylesheet" href="./style.css">
   </head>
   <body>
     <canvas id="scene"></canvas>
     <div style="display:none;">
       <img id="walls" src="./resources/walls.png"/>
       <img id="billboards" src="./resources/billboards.png"/>
+      <img id="floors" src="./resources/floors.png"/>
     </div>
   </body>
 </html>
@@ -19,8 +21,8 @@
   var main;
 
   window.onload = function() {
-    cvs.width = 240;
-    cvs.height = 180;
+    cvs.width = 160;
+    cvs.height = 120;
     let aspectRatio = cvs.width / cvs.height;
     cvs.style.width = window.innerHeight * aspectRatio + "px";
     cvs.style.height = window.innerHeight + "px";

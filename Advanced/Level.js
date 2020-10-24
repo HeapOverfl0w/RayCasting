@@ -14,6 +14,7 @@ class Level
   {
     this.wallTextures = document.getElementById("walls");
     this.billboardTextures = document.getElementById("billboards");
+    this.floors = document.getElementById("floors");
   }
 
   isWall(x, y)

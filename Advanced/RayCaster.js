@@ -11,7 +11,7 @@ class RayCaster {
     let cvsWidth = ctx.canvas.width;
     let cvsHeight = ctx.canvas.height;
     let aspectRatio = cvsWidth / cvsHeight;
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = this.shadeColor;
     ctx.fillRect(0,0, cvsWidth, cvsHeight);
 
     let zBuffer = [];
@@ -30,11 +30,15 @@ class RayCaster {
       let ceiling = floor - wallLength;
 
       rayData.height = wallLength;
+      rayData.ceiling = ceiling;
       rayData.rayAngle = rayAngle;
+      rayData.column = x;
 
       if (rayData.distance != this.maxViewDistance)
       {        
         ctx.drawImage(rayData.texture, Math.floor(rayData.texture.width * rayData.sample), 0, 1, rayData.texture.height, x, ceiling, 1, wallLength);
+        if (this.useShade)
+          this.drawLighting(ctx, rayData);
       }
       this.drawFloor(ctx, camera, floor, x, rayData, level);
 
@@ -42,8 +46,6 @@ class RayCaster {
     }
 
     this.drawBillboards(ctx, camera, level, zBuffer);
-    if (this.useShade)
-      this.drawLighting(ctx, cvsHeight, zBuffer);
   }
 
   cast(camera, angle, level)
@@ -60,7 +62,7 @@ class RayCaster {
 
     while(!isHit && distance < this.maxViewDistance)
     {
-      distance += 0.1;
+      distance += 0.05;
       rayX = camera.x + Math.sin(angle) * distance;
       rayY = camera.y + Math.cos(angle) * distance;
       floorRayX = Math.floor(rayX);
@@ -143,8 +145,6 @@ class RayCaster {
             if (zBuffer[column].distance >= distanceFromCamera)
             {
               ctx.drawImage(billboardTexture, Math.floor(billboardTexture.width * sampleX), 0, 1, billboardTexture.height, column, ceiling, 1, height);
-              zBuffer[column].distance = distanceFromCamera;
-              zBuffer[column].height = height;
             }
           }
         }
@@ -152,37 +152,49 @@ class RayCaster {
     }
   }
 
-  drawLighting(ctx, cvsHeight, zBuffer)
+  drawLighting(ctx, rayData)
   {
-    for(let x = 0; x < zBuffer.length; x++)
+    let shade = this.shade(rayData.distance);
+    if (shade > 0.3)
     {
       ctx.save();
-      ctx.globalAlpha = this.shade(zBuffer[x].height, cvsHeight);
+      ctx.globalAlpha = shade;
       ctx.fillStyle = this.shadeColor;
-      ctx.fillRect(x, 0, 1, cvsHeight);
+      ctx.fillRect(rayData.column, rayData.ceiling, 1, rayData.height);
       ctx.restore();
     }
   }
 
   drawFloor(ctx, camera, floorStart, column, rayData, level)
   {
-    let texture = level.wallTextures;
+    let texture = level.floors;
     let cvsHeight = ctx.canvas.height;
     let halfCvsHeight = cvsHeight >> 1;
-    let floorFloorStart = Math.floor(floorStart);
+    let floorFloorStart = Math.round(floorStart);
     for (let iy = floorFloorStart; iy < cvsHeight; iy++)
     {
-      let distance = (90 / (iy - halfCvsHeight));
+      let distance = (60 / (iy - halfCvsHeight));
       let x = distance * rayData.rayAngleX + camera.x;
       let y = distance * rayData.rayAngleY + camera.y;
 
-      ctx.drawImage(texture, (x % 1) * texture.width, (y % 1) * texture.height, 1, 1, column, iy, 1,1);
+      ctx.drawImage(texture, Math.floor((x % 1) * texture.width), Math.floor((y % 1) * texture.height), 1, 1, column, iy, 1,1);
+      if (this.useShade)
+      {
+        let shade = this.shade(distance)
+        if (shade > 0.3)
+        {
+          ctx.save();
+          ctx.globalAlpha = shade;
+          ctx.fillStyle = this.shadeColor;
+          ctx.fillRect(column, iy, 1, 1);
+          ctx.restore();
+        }
+      }
     }
   }
 
-  shade(rayHeight, cvsHeight)
+  shade(distance)
   {
-    let modifier = 2;
-    return 1 - (rayHeight > cvsHeight / modifier ? 1 : rayHeight * modifier / cvsHeight);
+    return distance * 0.9 / this.maxViewDistance;
   }
 }
