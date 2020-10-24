@@ -13,7 +13,7 @@ class RayCaster {
     let aspectRatio = cvsWidth / cvsHeight;
     ctx.fillStyle = this.shadeColor;
     ctx.fillRect(0,0, cvsWidth, cvsHeight);
-    this.drawSky(ctx, camera, level);
+    this.drawSkybox(ctx, camera, level);
 
     let zBuffer = [];
 
