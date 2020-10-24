@@ -35,10 +35,12 @@ class Camera
     if (keyCode == 65)
     { //A
       this.angle -= 2 * updateInterval;
+      this.angle = this.angle % (2*Math.PI);
     }
     if (keyCode == 68)
     { //D
       this.angle += 2 * updateInterval;
+      this.angle = this.angle % (2*Math.PI);
     }
   }
 }

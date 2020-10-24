@@ -13,6 +13,7 @@ class RayCaster {
     let aspectRatio = cvsWidth / cvsHeight;
     ctx.fillStyle = this.shadeColor;
     ctx.fillRect(0,0, cvsWidth, cvsHeight);
+    this.drawSky(ctx, camera, level);
 
     let zBuffer = [];
 
@@ -104,6 +105,23 @@ class RayCaster {
       }
     }
     return {distance: distance, texture: level.wallTextureAt(floorRayX, floorRayY), sample: sampleX, rayAngleX: rayAngleX, rayAngleY: rayAngleY};
+  }
+
+  drawSkybox(ctx, camera, level)
+  {
+    let cvsHeight = ctx.canvas.height;
+    let cvsWidth = ctx.canvas.width;
+    let texture = level.skybox;
+    var width = texture.width * (cvsHeight / texture.height) * 2;
+    let angle = camera.angle;
+    if (angle < 0)
+      angle = 2*Math.PI + angle;
+    var left = (angle / (2*Math.PI)) * -width;
+
+    ctx.drawImage(texture, left, 0, width, cvsHeight);
+    if (left < width - cvsWidth) {
+      ctx.drawImage(texture, left + width, 0, width, cvsHeight);
+    }
   }
 
   drawBillboards(ctx, camera, level, zBuffer)
