@@ -160,7 +160,7 @@ class RayCaster {
       ctx.save();
       ctx.globalAlpha = shade;
       ctx.fillStyle = this.shadeColor;
-      ctx.fillRect(rayData.column, rayData.ceiling, 1, rayData.height);
+      ctx.fillRect(rayData.column, rayData.ceiling - 1, 1, rayData.height + 2);
       ctx.restore();
     }
   }
