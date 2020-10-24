@@ -152,11 +152,12 @@ class RayCaster {
         //let ceiling = cvsHeight / 2 - cvsHeight / distanceFromCamera;
         //let floor = cvsHeight - ceiling;
         //let height = floor - ceiling;
+        let billboardTexture = level.billboardTexture(level.billboards[i].type);
         let z = distanceFromCamera * Math.cos(angle);
-        let height = cvsHeight / z;
+        let height = (cvsHeight + billboardTexture.height - 16) / z;
         let floor = (cvsHeight + 32) / 2 * (1 + 1/z) - 15;
         let ceiling = floor - height;
-        let billboardTexture = level.billboardTexture(level.billboards[i].type);
+        
         let aspectRatio = billboardTexture.height / billboardTexture.width;
         let width = height / aspectRatio;
         let center = (0.5 * (angle / (camera.fov / 2)) + 0.5) * cvsWidth;
