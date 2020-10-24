@@ -14,7 +14,7 @@ class Main
     this.level = new Level(demoLevel);
     this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * (4/18), 5);
     this.rayCaster = new RayCaster(15, true, "#101010");
-    this.FPS = 25;
+    this.FPS = 30;
     this.fpsCounter = 0;
     this.lastSecond = new Date().getTime();
 
