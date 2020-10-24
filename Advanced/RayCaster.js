@@ -181,7 +181,7 @@ class RayCaster {
     let floorFloorStart = Math.round(floorStart);
     for (let iy = floorFloorStart; iy < cvsHeight; iy++)
     {
-      let distance = (80 / (iy - halfCvsHeight + 15));
+      let distance = (75 / (iy - halfCvsHeight + 15));
       let x = distance * rayData.rayAngleX + camera.x;
       let y = distance * rayData.rayAngleY + camera.y;
 
