@@ -13,7 +13,7 @@ class Main
                      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
     this.level = new Level(demoLevel);
     this.camera = new Camera(this.level.width/2, this.level.height/2, 0, Math.PI * (4/18), 5);
-    this.rayCaster = new RayCaster(5, true, "#101010");
+    this.rayCaster = new RayCaster(5, false, "#101010");
     this.FPS = 30;
 
     this.keysDown = [];
