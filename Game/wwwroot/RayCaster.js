@@ -153,7 +153,7 @@ class RayCaster {
           texture = level.billboardTexture(listOfBillboards[i].type);
 
         let z = distanceFromCamera * Math.cos(angle);
-        let height = (cvsHeight + texture.height) / z;
+        let height = (cvsHeight + texture.height - 16) / z;
         let floor = (cvsHeight + 32) / 2 * (1 + 1/z) - 15;
         let ceiling = floor - height;
         
