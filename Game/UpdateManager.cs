@@ -81,7 +81,11 @@ namespace HedgeMazeWithBros
 
       List<Player> playersAndProjectiles = new List<Player>();
       playersAndProjectiles.AddRange(Players);
-      playersAndProjectiles.AddRange(Projectiles);
+      try
+      {
+        playersAndProjectiles.AddRange(Projectiles);
+      }
+      catch { } //could have thread collision, forget about it and try next update
       _gameHub.Clients.All.SendAsync("UpdateBros", playersAndProjectiles);
     }
 
