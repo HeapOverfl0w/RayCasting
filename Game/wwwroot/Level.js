@@ -4,18 +4,22 @@ class Level
     this.levelArray = levelArray;
     this.width = levelArray.length;
     this.height = levelArray[0].length;
-    this.billboards = [{ type: 1, x: 2, y: 2 },
-    { type: 1, x: 5, y: 7 },
-    { type: 1, x: 9, y: 4 },
-    { type: 1, x: 6, y: 18 },
-    { type: 1, x: 3, y: 17 },
-    { type: 1, x: 10, y: 7 },
-      { type: 2, x: 5, y: 5 },
-      { type: 2, x: 4, y: 17 },
-      { type: 2, x: 3, y: 12 },
-      { type: 2, x: 13, y: 5 },
-      { type: 2, x: 8, y: 5 },
-      { type: 2, x: 12, y: 10 }];
+    this.billboards = [{ type: 1, x: 2, y: 14 },
+    { type: 1, x: 5, y: 19 },
+    { type: 1, x: 9, y: 16 },
+    { type: 1, x: 6, y: 30 },
+    { type: 1, x: 3, y: 29 },
+    { type: 1, x: 17, y: 19 },
+      { type: 2, x: 5, y: 17 },
+      { type: 2, x: 4, y: 29 },
+      { type: 2, x: 3, y: 24 },
+      { type: 2, x: 13, y: 21 },
+      { type: 2, x: 8, y: 17 },
+      { type: 2, x: 12, y: 22 },
+      { type: 3, x: 4, y: 16 },
+      { type: 3, x: 4, y: 17 },
+      { type: 3, x: 17, y: 13 },
+      { type: 3, x: 16, y: 28 }];
     this.players = [];
 
     this.loadTextures()
@@ -30,6 +34,15 @@ class Level
     this.player = document.getElementById("player");
     this.weapon = document.getElementById("weapon");
     this.bush = document.getElementById("bush");
+    this.tallWall = document.getElementById("tallwall");
+    this.barrell = document.getElementById("barrell");
+    this.water = document.getElementById("water");
+    this.wateredge = document.getElementById("wateredge");
+    this.stoneWall = document.getElementById("stonewall");
+    this.wood = document.getElementById("wood");
+    this.tallWall2 = document.getElementById("tallwall2");
+    this.tallDoor = document.getElementById("talldoor");
+    this.tallWallIndoor = document.getElementById("tallwallindoor");
   }
 
   isWall(x, y)
@@ -38,20 +51,71 @@ class Level
     if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)
       return true;
     else
-      return this.levelArray[x][y] > 0 && this.levelArray[x][y] < 100;
+      return (this.levelArray[x][y] > 0 && this.levelArray[x][y] < 7) || this.levelArray[x][y] > 70;
+  }
+
+  isPassable(x, y)
+  {
+    if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)
+      return false;
+    else
+      return this.levelArray[x][y] == 0 || this.levelArray[x][y] == 7 ;
   }
 
   wallTextureAt(x, y)
   {
-    if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)
-      return "#000000";
-    else
+    if (this.levelArray[x][y] > 70)
+      return this.tallDoor;
+    switch(this.levelArray[x][y])
     {
-      switch(this.levelArray[x][y])
-      {
-        case 1:
-          return this.wallTextures;
-      }
+      case 1:
+        return this.wallTextures;
+      case 2:
+        return this.tallWall;
+      case 3:
+        return this.stoneWall;
+      case 4:
+        return this.tallWall2;
+      case 5:
+        return this.tallWallIndoor;
+    }
+  }
+
+  isInside(x, y)
+  {
+    switch (this.levelArray[x][y])
+    {
+      case 7:
+        return true;
+    }
+    return false;
+  }
+
+  isTeleport(x, y)
+  {
+    if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)
+      return false;
+    else
+      return this.levelArray[x][y] > 70;
+  }
+
+  floorTextureAt(x, y)
+  {
+    if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)
+      return undefined;
+
+    switch (this.levelArray[x][y])
+    {
+      case 8:
+      case 3:
+        return this.water;
+      case 9:
+        return this.wateredge;
+      case 5:
+      case 7:
+        return this.wood;
+      default:
+        return this.floors;
     }
   }
 
@@ -63,6 +127,8 @@ class Level
         return this.billboardTextures;
       case 2:
         return this.bush;
+      case 3:
+        return this.barrell;
     }
   }
 }

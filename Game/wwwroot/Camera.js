@@ -15,22 +15,38 @@ class Camera
   {
     if (keyCode == 87)
     { //W
-      this.x += Math.sin(this.angle) * this.speed * updateInterval;
-      this.y += Math.cos(this.angle) * this.speed * updateInterval;
-      if (level.isWall(Math.floor(this.x), Math.floor(this.y)))
+      let adjustedX = this.x + Math.sin(this.angle) * this.speed * updateInterval;
+      let adjustedY = this.y + Math.cos(this.angle) * this.speed * updateInterval;
+      let floorAdjustedX = Math.floor(adjustedX);
+      let floorAdjustedY = Math.floor(adjustedY);
+      if (level.isTeleport(floorAdjustedX, floorAdjustedY)) {
+        for (let x = 0; x < level.width; x++) {
+          for (let y = 0; y < level.height; y++) {
+            if (level.levelArray[x][y] == level.levelArray[floorAdjustedX][floorAdjustedY] &&
+              floorAdjustedX != x && floorAdjustedY != y) {
+              this.x = x + 1;
+              this.y = y;
+              this.angle = (this.angle + Math.PI) % (2 * Math.PI);
+            }
+          }
+        }
+      }
+      else if (level.isPassable(Math.floor(adjustedX), Math.floor(adjustedY)))
       {
-        this.x -= Math.sin(this.angle) * this.speed * updateInterval;
-        this.y -= Math.cos(this.angle) * this.speed * updateInterval;
+        this.x = adjustedX;
+        this.y = adjustedY;
       }
     }
     if (keyCode == 83)
     { //S
-      this.x -= Math.sin(this.angle) * this.speed * updateInterval;
-      this.y -= Math.cos(this.angle) * this.speed * updateInterval;
-      if (level.isWall(Math.floor(this.x), Math.floor(this.y)))
+      let adjustedX = this.x - Math.sin(this.angle) * this.speed * updateInterval;
+      let adjustedY = this.y - Math.cos(this.angle) * this.speed * updateInterval;
+      let floorAdjustedX = Math.floor(adjustedX);
+      let floorAdjustedY = Math.floor(adjustedY);
+      if (level.isPassable(floorAdjustedX, floorAdjustedY))
       {
-        this.x += Math.sin(this.angle) * this.speed * updateInterval;
-        this.y += Math.cos(this.angle) * this.speed * updateInterval;
+        this.x = adjustedX;
+        this.y = adjustedY;
       }
     }
     if (keyCode == 65)

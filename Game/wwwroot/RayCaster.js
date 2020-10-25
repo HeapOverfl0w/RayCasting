@@ -4,6 +4,7 @@ class RayCaster {
     this.maxViewDistance = maxViewDistance;
     this.useShade = useShade;
     this.shadeColor = shadeColor;
+    this.wallTileSize = 16;
   }
 
   draw(ctx, camera, level)
@@ -11,9 +12,10 @@ class RayCaster {
     let cvsWidth = ctx.canvas.width;
     let cvsHeight = ctx.canvas.height;
     let aspectRatio = cvsWidth / cvsHeight;
-    ctx.fillStyle = this.shadeColor;
-    ctx.fillRect(0,0, cvsWidth, cvsHeight);
-    this.drawSkybox(ctx, camera, level);
+    ctx.fillStyle = "#524115";
+    ctx.fillRect(0, 0, cvsWidth, cvsHeight);
+    if (!level.isInside(Math.floor(camera.x), Math.floor(camera.y)))
+      this.drawSkybox(ctx, camera, level);
 
     let zBuffer = [];
 
@@ -26,7 +28,8 @@ class RayCaster {
       //let floor = cvsHeight - ceiling;
       //let wallLength = floor - ceiling;
       let z = rayData.distance * Math.cos(camera.angle - rayAngle);
-      let wallLength = cvsHeight / z * aspectRatio;
+      let textureHeight = rayData.texture != undefined ? rayData.texture.height / this.wallTileSize : this.wallTileSize;
+      let wallLength = cvsHeight * textureHeight / z * aspectRatio;
       let floor = (cvsHeight + 32) / 2 * (1 + 1/z) - 15;
       let ceiling = floor - wallLength;
 
@@ -46,8 +49,9 @@ class RayCaster {
       zBuffer.push(rayData);
     }
 
-    this.drawBillboards(ctx, camera, zBuffer, level.billboardTextures, level.billboards, level);
-    this.drawBillboards(ctx, camera, zBuffer, level.player, level.players);
+    let allBillboards = level.billboards.concat(level.players);
+
+    this.drawBillboards(ctx, camera, zBuffer, level.player, allBillboards, level);
 
     if (!camera.attacking)
       ctx.drawImage(level.weapon, 0, 0, level.weapon.width, level.weapon.height, 0, 0, cvsWidth, cvsHeight);
@@ -125,14 +129,15 @@ class RayCaster {
     let cvsWidth = ctx.canvas.width;
     let cvsHeight = ctx.canvas.height;
 
-    let texture = suggestedTexture;
+    let billboardsToDraw = []
 
     for (let i = 0; i < listOfBillboards.length; i++)
     {
       if (PLAYERNUM == listOfBillboards[i].num)
         continue;
-      let x = listOfBillboards[i].x - camera.x;
-      let y = listOfBillboards[i].y - camera.y;
+      let positionModifer = listOfBillboards[i].num != undefined ? 0 : 0.5;
+      let x = listOfBillboards[i].x + positionModifer - camera.x;
+      let y = listOfBillboards[i].y + positionModifer - camera.y;
       let distanceFromCamera = Math.sqrt(x*x + y*y);
 
       let cameraX = Math.sin(camera.angle);
@@ -149,29 +154,36 @@ class RayCaster {
 
       if (inFov && distanceFromCamera >= 0.5 && distanceFromCamera < this.maxViewDistance)
       {
-        if (level != undefined)
-          texture = level.billboardTexture(listOfBillboards[i].type);
+        billboardsToDraw.push({ billboard: listOfBillboards[i], dist: distanceFromCamera, angle: angle });
+      }
+    }
 
-        let z = distanceFromCamera * Math.cos(angle);
-        let height = (cvsHeight + texture.height - 16) / z;
-        let floor = (cvsHeight + 32) / 2 * (1 + 1/z) - 15;
-        let ceiling = floor - height;
-        
-        let aspectRatio = texture.height / texture.width;
-        let width = height / aspectRatio;
-        let center = (0.5 * (angle / (camera.fov / 2)) + 0.5) * cvsWidth;
+    billboardsToDraw.sort((a, b) => {
+      return b.dist - a.dist;
+    })
 
-        for (let ix = 0; ix < width; ix++)
-        {
-          let sampleX = ix / width;
-          //let sampleY = iy / height;
-          let column = Math.floor(center + ix - width / 2);
-          if (column >= 0 && column < cvsWidth)
-          {
-            if (zBuffer[column].distance >= distanceFromCamera)
-            {
-              ctx.drawImage(texture, Math.floor(texture.width * sampleX), 0, 1, texture.height, column, ceiling, 1, height);
-            }
+    for (let i = 0; i < billboardsToDraw.length; i++)
+    {
+      let texture = suggestedTexture;
+      if (billboardsToDraw[i].billboard.type != undefined)
+        texture = level.billboardTexture(billboardsToDraw[i].billboard.type);
+
+      let z = billboardsToDraw[i].dist * Math.cos(billboardsToDraw[i].angle);
+      let height = (cvsHeight + texture.height - 16) / z;
+      let floor = (cvsHeight + 32) / 2 * (1 + 1 / z) - 15;
+      let ceiling = floor - height;
+
+      let aspectRatio = texture.height / texture.width;
+      let width = height / aspectRatio;
+      let center = (0.5 * (billboardsToDraw[i].angle / (camera.fov / 2)) + 0.5) * cvsWidth;
+
+      for (let ix = 0; ix < width; ix++) {
+        let sampleX = ix / width;
+        //let sampleY = iy / height;
+        let column = Math.floor(center + ix - width / 2);
+        if (column >= 0 && column < cvsWidth) {
+          if (zBuffer[column].distance >= billboardsToDraw[i].dist) {
+            ctx.drawImage(texture, Math.floor(texture.width * sampleX), 0, 1, texture.height, column, ceiling, 1, height);
           }
         }
       }
@@ -193,7 +205,6 @@ class RayCaster {
 
   drawFloor(ctx, camera, floorStart, column, rayData, level)
   {
-    let texture = level.floors;
     let cvsHeight = ctx.canvas.height;
     let halfCvsHeight = (cvsHeight + 32) >> 1;
     let floorFloorStart = Math.round(floorStart);
@@ -202,8 +213,12 @@ class RayCaster {
       let distance = (75 / (iy - halfCvsHeight + 15));
       let x = distance * rayData.rayAngleX + camera.x;
       let y = distance * rayData.rayAngleY + camera.y;
+      let floorX = Math.floor(x);
+      let floorY = Math.floor(y);
+      let texture = level.floorTextureAt(floorX, floorY);
 
-      ctx.drawImage(texture, Math.floor((x % 1) * texture.width), Math.floor((y % 1) * texture.height), 1, 1, column, iy, 1,1);
+      if (texture != undefined)
+        ctx.drawImage(texture, Math.floor((x % 1) * texture.width), Math.floor((y % 1) * texture.height), 1, 1, column, iy, 1,1);
       if (this.useShade)
       {
         let shade = this.shade(distance)
