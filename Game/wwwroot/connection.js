@@ -69,3 +69,7 @@ function SendBroMessage(message) {
 function SendAttack(a) {
   gameConnect.invoke("SendAttack", a);
 }
+
+function SendRangedAttack(a) {
+  gameConnect.invoke("SendRangedAttack", a);
+}

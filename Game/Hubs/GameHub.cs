@@ -67,6 +67,13 @@ namespace HedgeMazeWithBros.Hubs
       }
     }
 
+    public async Task SendRangedAttack(double a)
+    {
+      Projectile p = new Projectile((Context.Items["player"] as Player).x, (Context.Items["player"] as Player).y, a);
+      p.Update(2);
+      _updatedManager.Projectiles.Add(p);    
+    }
+
     public async Task SendBroMessage(string message)
     {
       Clients.All.SendAsync("BroMessage", message);

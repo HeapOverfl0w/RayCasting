@@ -53,8 +53,13 @@ class RayCaster {
 
     this.drawBillboards(ctx, camera, zBuffer, level.player, allBillboards, level);
 
-    if (!camera.attacking)
+    if (!camera.attacking && camera.weapon == 1)
       ctx.drawImage(level.weapon, 0, 0, level.weapon.width, level.weapon.height, 0, 0, cvsWidth, cvsHeight);
+    else if (!camera.attacking && camera.weapon == 2) {
+      ctx.drawImage(level.weapon2, 0, 0, level.weapon2.width, level.weapon2.height, 0, 0, cvsWidth, cvsHeight);
+      ctx.fillStyle = "Red";
+      ctx.fillRect(cvsWidth / 2, cvsHeight / 2, 1, 1);
+    }
   }
 
   cast(camera, angle, level)
@@ -167,6 +172,8 @@ class RayCaster {
       let texture = suggestedTexture;
       if (billboardsToDraw[i].billboard.type != undefined)
         texture = level.billboardTexture(billboardsToDraw[i].billboard.type);
+      if (billboardsToDraw[i].billboard.isEnemy)
+        texture = level.arrow;
 
       let z = billboardsToDraw[i].dist * Math.cos(billboardsToDraw[i].angle);
       let height = (cvsHeight + texture.height - 16) / z;

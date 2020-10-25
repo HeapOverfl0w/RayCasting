@@ -9,6 +9,7 @@ class Camera
     this.speed = speed;
     this.height = 16;
     this.attacking = false;
+    this.weapon = 1;
   }
 
   handleKeyDown(keyCode, level, updateInterval)
@@ -39,8 +40,8 @@ class Camera
     }
     if (keyCode == 83)
     { //S
-      let adjustedX = this.x - Math.sin(this.angle) * this.speed * updateInterval;
-      let adjustedY = this.y - Math.cos(this.angle) * this.speed * updateInterval;
+      let adjustedX = this.x - Math.sin(this.angle) * this.speed * (0.5) * updateInterval;
+      let adjustedY = this.y - Math.cos(this.angle) * this.speed * (0.5) * updateInterval;
       let floorAdjustedX = Math.floor(adjustedX);
       let floorAdjustedY = Math.floor(adjustedY);
       if (level.isPassable(floorAdjustedX, floorAdjustedY))

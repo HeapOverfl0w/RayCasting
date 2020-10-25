@@ -43,6 +43,8 @@ class Level
     this.tallWall2 = document.getElementById("tallwall2");
     this.tallDoor = document.getElementById("talldoor");
     this.tallWallIndoor = document.getElementById("tallwallindoor");
+    this.weapon2 = document.getElementById("weapon2");
+    this.arrow = document.getElementById("arrow");
   }
 
   isWall(x, y)
