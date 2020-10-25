@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Raycasting Demo</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+
+    <input id="chatbox" />
+    <div style="display:none;">
+      <img id="walls" src="./resources/walls.png" />
+      <img id="billboards" src="./resources/billboards.png" />
+      <img id="floors" src="./resources/floors.png" />
+      <img id="skybox" src="./resources/skybox.png" />
+      <img id="player" src="./resources/player.png" />
+      <img id="weapon" src="./resources/weapon.png" />
+      <img id="bush" src="./resources/bush.png" />
+    </div>
+    <table>
+      <tr>
+        <td>
+          <canvas id="scene"></canvas>
+        </td>
+        <td id="disctd">
+          <ul id="discussion"></ul>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+<script src="Main.js"></script>
+<script src="Camera.js"></script>
+<script src="Level.js"></script>
+<script src="RayCaster.js"></script>
+<script src="signalr.js"></script>
+<script src="connection.js"></script>
+<script>
+  var cvs = document.getElementById("scene");
+  var main;
+
+  window.onload = function() {
+    cvs.width = 160;
+    cvs.height = 120;
+    let aspectRatio = cvs.width / cvs.height;
+    cvs.style.width = window.innerHeight * aspectRatio + "px";
+    cvs.style.height = window.innerHeight + "px";
+    let ctx = cvs.getContext("2d");
+
+    document.getElementById("chatbox").style.visibility = "hidden";
+
+    main = new Main(ctx);
+    main.initialize();
+  };
+
+  window.onresize = function(){
+    let aspectRatio = cvs.width / cvs.height;
+    cvs.style.width = window.innerHeight * aspectRatio + "px";
+    cvs.style.height = window.innerHeight + "px";
+  };
+
+  document.addEventListener('keydown', function(event) {
+    main.handleKeyDown(event.keyCode);
+  });
+
+  document.addEventListener('keyup', function(event) {
+    main.handleKeyUp(event.keyCode);
+  })
+</script>
