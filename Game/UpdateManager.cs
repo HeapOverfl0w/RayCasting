@@ -40,7 +40,7 @@ namespace HedgeMazeWithBros
     }
     public void StartGame()
     {
-      _updateTimer.Change(0, 100);
+      _updateTimer.Change(0, 75);
     }
 
     public void StopGame()

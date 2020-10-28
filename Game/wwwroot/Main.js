@@ -44,7 +44,7 @@ class Main
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]]
     this.level = new Level(demoLevel);
-    this.camera = new Camera(this.spawns[0].x, this.spawns[0].y, this.spawns[0].a, Math.PI * (4/18), 5);
+    this.camera = new Camera(this.spawns[0].x, this.spawns[0].y, this.spawns[0].a, Math.PI * (7/18), 5);
     this.rayCaster = new RayCaster(15, true, "#7da1f5");
     this.FPS = 25;
     this.lastSecond = new Date().getTime();
@@ -152,6 +152,7 @@ class Main
         chatbox.style.visibility = "hidden";
         chatbox.setAttribute("disabled", "disabled");
         chatbox.value = "";
+        this.ctx.canvas.requestPointerLock();
       }
     }
 
@@ -165,15 +166,15 @@ class Main
 
     let currentTime = new Date().getTime();
     let timeRequirement = this.camera.weapon == 2 ? this.weapon2RechargeTime : this.weaponRechargeTime;
-    if (keyCode == 32 && currentTime - this.lastAttack > timeRequirement) //space
-    {
-      this.camera.attacking = true;
-      this.lastAttack = currentTime;
-      if (this.camera.weapon == 1)
-        SendAttack(this.camera.angle);
-      else
-        SendRangedAttack(this.camera.angle);
-    }
+    //if (keyCode == 32 && currentTime - this.lastAttack > timeRequirement) //space
+    //{
+    //  this.camera.attacking = true;
+    //  this.lastAttack = currentTime;
+    //  if (this.camera.weapon == 1)
+    //    SendAttack(this.camera.angle);
+    //  else
+    //    SendRangedAttack(this.camera.angle);
+    //}
 
     if (keyCode == 50 && this.camera.weapon != 2 && currentTime - this.lastAttack > timeRequirement) //2 switch to bow
     {
@@ -192,6 +193,32 @@ class Main
     }
     
     if (removeAt != -1)
-      this.keysDown.splice(removeAt,1);
+      this.keysDown.splice(removeAt, 1);
+
+    if (keyCode == 65 || keyCode == 68) {
+      if (!this.keysDown.includes(65) && !this.keysDown.includes(68))
+        this.camera.isStrafing = false;
+    }
+  }
+
+  handleMouseMove(movementx) {
+    let angle = movementx * 0.1 * Math.PI / 180
+    this.camera.angle = (this.camera.angle + angle) % (2 * Math.PI);
+    if (this.angle < 0)
+      this.camera.angle = this.camera.angle + (2 * Math.PI);
+  }
+
+  handleMouseUp() {
+    let currentTime = new Date().getTime();
+    let timeRequirement = this.camera.weapon == 2 ? this.weapon2RechargeTime : this.weaponRechargeTime;
+    if (currentTime - this.lastAttack > timeRequirement) //space
+    {
+      this.camera.attacking = true;
+      this.lastAttack = currentTime;
+      if (this.camera.weapon == 1)
+        SendAttack(this.camera.angle);
+      else
+        SendRangedAttack(this.camera.angle);
+    }
   }
 }

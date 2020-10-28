@@ -10,14 +10,16 @@ class Camera
     this.height = 16;
     this.attacking = false;
     this.weapon = 1;
+    this.isStrafing = false;
   }
 
-  handleKeyDown(keyCode, level, updateInterval)
+  handleKeyDown(keyCode, level, updateInterval, isStrafing)
   {
     if (keyCode == 87)
     { //W
-      let adjustedX = this.x + Math.sin(this.angle) * this.speed * updateInterval;
-      let adjustedY = this.y + Math.cos(this.angle) * this.speed * updateInterval;
+      let modifier = this.isStrafing ? 0.4 : 1;
+      let adjustedX = this.x + Math.sin(this.angle) * this.speed * modifier * updateInterval;
+      let adjustedY = this.y + Math.cos(this.angle) * this.speed * modifier * updateInterval;
       let floorAdjustedX = Math.floor(adjustedX);
       let floorAdjustedY = Math.floor(adjustedY);
       if (level.isTeleport(floorAdjustedX, floorAdjustedY)) {
@@ -40,8 +42,9 @@ class Camera
     }
     if (keyCode == 83)
     { //S
-      let adjustedX = this.x - Math.sin(this.angle) * this.speed * (0.5) * updateInterval;
-      let adjustedY = this.y - Math.cos(this.angle) * this.speed * (0.5) * updateInterval;
+      let modifier = this.isStrafing ? 0.2 : 0.5;
+      let adjustedX = this.x - Math.sin(this.angle) * this.speed * modifier * updateInterval;
+      let adjustedY = this.y - Math.cos(this.angle) * this.speed * modifier * updateInterval;
       let floorAdjustedX = Math.floor(adjustedX);
       let floorAdjustedY = Math.floor(adjustedY);
       if (level.isPassable(floorAdjustedX, floorAdjustedY))
@@ -52,15 +55,27 @@ class Camera
     }
     if (keyCode == 65)
     { //A
-      this.angle -= 2 * updateInterval;
-      this.angle = this.angle % (2 * Math.PI);
-      if (this.angle < 0)
-        this.angle = this.angle + (2 * Math.PI);
+      let adjustedX = this.x - Math.sin(this.angle + Math.PI/2) * this.speed * (0.6) * updateInterval;
+      let adjustedY = this.y - Math.cos(this.angle + Math.PI/2) * this.speed * (0.6) * updateInterval;
+      let floorAdjustedX = Math.floor(adjustedX);
+      let floorAdjustedY = Math.floor(adjustedY);
+      if (level.isPassable(floorAdjustedX, floorAdjustedY)) {
+        this.x = adjustedX;
+        this.y = adjustedY;
+      }
+      this.isStrafing = true;
     }
     if (keyCode == 68)
     { //D
-      this.angle += 2 * updateInterval;
-      this.angle = this.angle % (2*Math.PI);
+      let adjustedX = this.x - Math.sin(this.angle - Math.PI/2) * this.speed * (0.6) * updateInterval;
+      let adjustedY = this.y - Math.cos(this.angle - Math.PI/2) * this.speed * (0.6) * updateInterval;
+      let floorAdjustedX = Math.floor(adjustedX);
+      let floorAdjustedY = Math.floor(adjustedY);
+      if (level.isPassable(floorAdjustedX, floorAdjustedY)) {
+        this.x = adjustedX;
+        this.y = adjustedY;
+      }
+      this.isStrafing = true;
     }
   }
 }

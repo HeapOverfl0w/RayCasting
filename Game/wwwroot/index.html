@@ -61,6 +61,9 @@
 
     main = new Main(ctx);
     main.initialize();
+    cvs.addEventListener('mousedown', function (event) {
+      cvs.requestPointerLock();
+    });
   };
 
   window.onresize = function(){
@@ -73,7 +76,17 @@
     main.handleKeyDown(event.keyCode);
   });
 
-  document.addEventListener('keyup', function(event) {
+  document.addEventListener('keyup', function (event) {
     main.handleKeyUp(event.keyCode);
-  })
+  });
+
+  document.addEventListener('mouseup', function (event) {
+    if (main != undefined) 
+      main.handleMouseUp()
+  });
+
+  document.addEventListener('mousemove', function (event) {
+    if (main != undefined)
+      main.handleMouseMove(event.movementX);
+  });
 </script>
