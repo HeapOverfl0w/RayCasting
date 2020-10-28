@@ -30,10 +30,11 @@ namespace HedgeMazeWithBros.Hubs
       //await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMaze", _mazeBuilder.CurrentMaze);
     }
 
-    public async Task SendLocation(double x, double y)
+    public async Task SendLocation(double x, double y, double a)
     {
       (Context.Items["player"] as Player).x = x;
       (Context.Items["player"] as Player).y = y;
+      (Context.Items["player"] as Player).a = a;
     }
 
     public async Task SendAttack(double a)

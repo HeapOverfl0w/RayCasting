@@ -9,17 +9,31 @@ class Level
     { type: 1, x: 9, y: 16 },
     { type: 1, x: 6, y: 30 },
     { type: 1, x: 3, y: 29 },
-    { type: 1, x: 17, y: 19 },
+      { type: 1, x: 17, y: 19 },
+      { type: 1, x: 24, y: 24 },
+      { type: 1, x: 22, y: 26 },
+      { type: 1, x: 26, y: 15 },
+      { type: 1, x: 25, y: 34 },
+      { type: 1, x: 28, y: 37 },
       { type: 2, x: 5, y: 17 },
       { type: 2, x: 4, y: 29 },
       { type: 2, x: 3, y: 24 },
       { type: 2, x: 13, y: 21 },
       { type: 2, x: 8, y: 17 },
       { type: 2, x: 12, y: 22 },
+      { type: 2, x: 24, y: 15 },
+      { type: 2, x: 25, y: 28 },
+      { type: 2, x: 27, y: 23 },
+      { type: 2, x: 22, y: 23 },
+      { type: 2, x: 25, y: 12 },
+      { type: 2, x: 26, y: 16 },
       { type: 3, x: 4, y: 16 },
       { type: 3, x: 4, y: 17 },
       { type: 3, x: 17, y: 13 },
-      { type: 3, x: 16, y: 28 }];
+      { type: 3, x: 16, y: 28 },
+      { type: 3, x: 21, y: 12 },
+      { type: 3, x: 22, y: 12 },
+      { type: 3, x: 28, y: 18 }];
     this.players = [];
 
     this.loadTextures()
@@ -32,6 +46,7 @@ class Level
     this.floors = document.getElementById("floors");
     this.skybox = document.getElementById("skybox");
     this.player = document.getElementById("player");
+    this.playerBack = document.getElementById("playerback");
     this.weapon = document.getElementById("weapon");
     this.bush = document.getElementById("bush");
     this.tallWall = document.getElementById("tallwall");

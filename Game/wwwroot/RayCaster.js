@@ -5,6 +5,7 @@ class RayCaster {
     this.useShade = useShade;
     this.shadeColor = shadeColor;
     this.wallTileSize = 16;
+    this.renderFloor = true;
   }
 
   draw(ctx, camera, level)
@@ -44,14 +45,15 @@ class RayCaster {
         if (this.useShade)
           this.drawLighting(ctx, rayData);
       }
-      this.drawFloor(ctx, camera, floor, x, rayData, level);
+      if (this.renderFloor)
+        this.drawFloor(ctx, camera, floor, x, rayData, level);
 
       zBuffer.push(rayData);
     }
 
     let allBillboards = level.billboards.concat(level.players);
 
-    this.drawBillboards(ctx, camera, zBuffer, level.player, allBillboards, level);
+    this.drawBillboards(ctx, camera, zBuffer, allBillboards, level);
 
     if (!camera.attacking && camera.weapon == 1)
       ctx.drawImage(level.weapon, 0, 0, level.weapon.width, level.weapon.height, 0, 0, cvsWidth, cvsHeight);
@@ -109,7 +111,10 @@ class RayCaster {
         }
       }
     }
-    return {distance: distance, texture: level.wallTextureAt(floorRayX, floorRayY), sample: sampleX, rayAngleX: rayAngleX, rayAngleY: rayAngleY};
+    if (distance != this.maxViewDistance)
+      return { distance: distance, texture: level.wallTextureAt(floorRayX, floorRayY), sample: sampleX, rayAngleX: rayAngleX, rayAngleY: rayAngleY };
+    else 
+      return { distance: distance, sample: sampleX, rayAngleX: rayAngleX, rayAngleY: rayAngleY };
   }
 
   drawSkybox(ctx, camera, level)
@@ -129,21 +134,19 @@ class RayCaster {
     }
   }
 
-  drawBillboards(ctx, camera, zBuffer, suggestedTexture, listOfBillboards, level)
-  {
+  drawBillboards(ctx, camera, zBuffer, listOfBillboards, level) {
     let cvsWidth = ctx.canvas.width;
     let cvsHeight = ctx.canvas.height;
 
     let billboardsToDraw = []
 
-    for (let i = 0; i < listOfBillboards.length; i++)
-    {
+    for (let i = 0; i < listOfBillboards.length; i++) {
       if (PLAYERNUM == listOfBillboards[i].num)
         continue;
       let positionModifer = listOfBillboards[i].num != undefined ? 0 : 0.5;
       let x = listOfBillboards[i].x + positionModifer - camera.x;
       let y = listOfBillboards[i].y + positionModifer - camera.y;
-      let distanceFromCamera = Math.sqrt(x*x + y*y);
+      let distanceFromCamera = Math.sqrt(x * x + y * y);
 
       let cameraX = Math.sin(camera.angle);
       let cameraY = Math.cos(camera.angle);
@@ -157,8 +160,7 @@ class RayCaster {
 
       let inFov = Math.abs(angle) < camera.fov / 2;
 
-      if (inFov && distanceFromCamera >= 0.5 && distanceFromCamera < this.maxViewDistance)
-      {
+      if (inFov && distanceFromCamera >= 0.5 && distanceFromCamera < this.maxViewDistance) {
         billboardsToDraw.push({ billboard: listOfBillboards[i], dist: distanceFromCamera, angle: angle });
       }
     }
@@ -167,13 +169,16 @@ class RayCaster {
       return b.dist - a.dist;
     })
 
-    for (let i = 0; i < billboardsToDraw.length; i++)
-    {
-      let texture = suggestedTexture;
-      if (billboardsToDraw[i].billboard.type != undefined)
-        texture = level.billboardTexture(billboardsToDraw[i].billboard.type);
+    for (let i = 0; i < billboardsToDraw.length; i++) {
+      let texture = level.player;
       if (billboardsToDraw[i].billboard.isEnemy)
         texture = level.arrow;
+      else if (billboardsToDraw[i].billboard.type != undefined)
+        texture = level.billboardTexture(billboardsToDraw[i].billboard.type);
+      else if (billboardsToDraw[i].billboard.a != undefined &&
+        (Math.abs(this.oneEightyAngle(billboardsToDraw[i].billboard.a) - this.oneEightyAngle(camera.angle)) < Math.PI * 2/3))
+        texture = level.playerBack;
+               
 
       let z = billboardsToDraw[i].dist * Math.cos(billboardsToDraw[i].angle);
       let height = (cvsHeight + texture.height - 16) / z;
@@ -195,6 +200,10 @@ class RayCaster {
         }
       }
     }
+  }
+
+  oneEightyAngle(a) {
+    return (a + Math.PI) % (2 * Math.PI) - Math.PI
   }
 
   drawLighting(ctx, rayData)

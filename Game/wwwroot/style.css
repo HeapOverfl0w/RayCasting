@@ -1,12 +1,13 @@
 html, body {
-    overflow: hidden;
-    margin: 0;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -webkit-crisp-edges;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    /*cursor: url("./resources/cursor.png"), auto;*/
-  }
+  overflow: hidden;
+  margin: 0;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background-color: #524115;
+  /*cursor: url("./resources/cursor.png"), auto;*/
+}
 
 #chatbox {
   position: absolute;
@@ -17,5 +18,9 @@ html, body {
 }
 
 #disctd {
+  background-color: #d9d3ce;
   vertical-align: top;
+  padding: 10px 10px 10px 10px;
+  width: 99%;
+  border: 20px solid #524115;
 }

@@ -57,9 +57,9 @@ function Connect()
     });
 }
 
-function SendLocation(x, y)
+function SendLocation(x, y, a)
 {
-    gameConnect.invoke("SendLocation", x, y);
+    gameConnect.invoke("SendLocation", x, y, a);
 }
 
 function SendBroMessage(message) {
