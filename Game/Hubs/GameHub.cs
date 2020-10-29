@@ -90,7 +90,7 @@ namespace HedgeMazeWithBros.Hubs
     public async Task SendRangedAttack(double a)
     {
       Projectile p = new Projectile((Context.Items["player"] as Player).x - 0.5, (Context.Items["player"] as Player).y - 0.5, a, (Context.Items["player"] as Player).num);
-      p.Update(2);
+      p.Update(2, _updatedManager.MapData);
       _updatedManager.Projectiles.Add(p);    
     }
 
