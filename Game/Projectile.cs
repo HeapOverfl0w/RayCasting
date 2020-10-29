@@ -5,13 +5,17 @@ using System.Threading.Tasks;
 
 namespace HedgeMazeWithBros
 {
-  public class Projectile : Player
+  public class Projectile : GameObject
   {
     public double dist { get; set; }
+    public int type { get; set; }
+    public int own { get; set; }
 
-    public Projectile(double x, double y, double a) : base(x, y, -1, true)
+    public Projectile(double x, double y, double a, int ownership) : base(x, y, a)
     {
       this.a = a;
+      this.type = 0; //arrow
+      this.own = ownership;
     }
 
     public void Update(double speed)

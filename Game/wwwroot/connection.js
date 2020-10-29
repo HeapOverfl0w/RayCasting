@@ -29,11 +29,11 @@ gameConnect.on("BroMessage", (result) => {
   SetMessage(result);
 });
 
-gameConnect.on("PlayerKill", (result) => {
-  if (PLAYERNUM == result) {
+gameConnect.on("PlayerKill", (pnum, knum) => {
+  if (PLAYERNUM == pnum) {
     PLAYERKILL = true;
   }
-  SetMessage("Player " + result + " was killed!")
+  SetMessage("Player " + knum + " stabbed Player " + pnum + "!");
 });
 
 function SetMessage(message) {

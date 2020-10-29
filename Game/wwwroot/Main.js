@@ -38,10 +38,10 @@ class Main
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
       [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]]
     this.level = new Level(demoLevel);
     this.camera = new Camera(this.spawns[0].x, this.spawns[0].y, this.spawns[0].a, Math.PI * (7/18), 5);
@@ -106,12 +106,13 @@ class Main
     //check if hit by arrow
     for (let i = 0; i < main.level.players.length; i++) {
       let a = main.level.players[i];
-      if (a.isEnemy) {
-        if (((a.x) > (main.camera.x - 0.5)) &&
-          ((a.x) < (main.camera.x + 0.5)) &&
-          ((a.y) > (main.camera.y - 0.5)) &&
-          ((a.y) < (main.camera.y + 0.5))) {
-          SendBroMessage("Player " + PLAYERNUM + " was killed by an arrow!");
+      if (a.dist != undefined) {
+        if (((a.x + 0.5) > (main.camera.x - 0.5)) &&
+          ((a.x + 0.5) < (main.camera.x + 0.5)) &&
+          ((a.y + 0.5) > (main.camera.y - 0.5)) &&
+          ((a.y + 0.5) < (main.camera.y + 0.5))) {
+          let owner = a.own == -1 ? "Boss" : "Player " + a.own;
+          SendBroMessage(owner + " shot Player " + PLAYERNUM +"!");
           PLAYERKILL = true;
         }
       }
@@ -147,8 +148,12 @@ class Main
         chatbox.focus();
       }
       else {
-        if (chatbox.value != undefined && chatbox.value != "")
-          SendBroMessage("Player "+PLAYERNUM+" : " + chatbox.value);
+        if (chatbox.value != undefined && chatbox.value != "") {
+          if (chatbox.value.startsWith("/"))
+            SendBroMessage(chatbox.value);
+          else
+            SendBroMessage("Player " + PLAYERNUM + " : " + chatbox.value);
+        }
         chatbox.style.visibility = "hidden";
         chatbox.setAttribute("disabled", "disabled");
         chatbox.value = "";

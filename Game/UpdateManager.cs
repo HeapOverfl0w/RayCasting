@@ -14,6 +14,7 @@ namespace HedgeMazeWithBros
     private Timer _resetGameTimer;
     private bool _initialized;
     private IHubContext<GameHub> _gameHub;
+    
 
     public int CurrentPlayerNumber { get; set; }
 
@@ -21,6 +22,7 @@ namespace HedgeMazeWithBros
     {
       _initialized = false;
       _updateTimer = new Timer(new TimerCallback(TimerTask), null, Timeout.Infinite, Timeout.Infinite);
+      Boss = new Boss(20, 20);
       Players = new List<Player>();
       Projectiles = new List<Projectile>();
     }
@@ -28,6 +30,8 @@ namespace HedgeMazeWithBros
     public List<Player> Players { get; private set; }
 
     public List<Projectile> Projectiles { get; private set; }
+
+    public Boss Boss { get; private set; }
 
     public void Initialize(IHubContext<GameHub> gameHub)
     {
@@ -79,11 +83,15 @@ namespace HedgeMazeWithBros
         catch { } //could have thread collision, forget about it and try next update
       }
 
-      List<Player> playersAndProjectiles = new List<Player>();
+      Boss.Update(Players, Projectiles, _gameHub);
+
+      List<dynamic> playersAndProjectiles = new List<dynamic>();
       playersAndProjectiles.AddRange(Players);
       try
       {
         playersAndProjectiles.AddRange(Projectiles);
+        if (Boss.health > 0)
+          playersAndProjectiles.Add(Boss);
       }
       catch { } //could have thread collision, forget about it and try next update
       _gameHub.Clients.All.SendAsync("UpdateBros", playersAndProjectiles);

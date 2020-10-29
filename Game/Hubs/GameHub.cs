@@ -58,11 +58,30 @@ namespace HedgeMazeWithBros.Hubs
           if (Math.Abs(angle) < (Math.PI / 4))
           {
             var distanceFromPlayer = Math.Sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
-            if (distanceFromPlayer < 1.5)
+            if (distanceFromPlayer < 1.7)
             {
-              Clients.All.SendAsync("PlayerKill", p.num);
+              Clients.All.SendAsync("PlayerKill", p.num , num);
               break;
             }
+          }
+        }
+      }
+
+      //boss
+      if (_updatedManager.Boss.health > 0)
+      {
+        var angle = Math.Atan2(cameraY, cameraX) - Math.Atan2(p.y - y, p.x - x);
+        if (angle < -Math.PI)
+          angle += 2 * Math.PI;
+        if (angle > Math.PI)
+          angle -= 2 * Math.PI;
+
+        if (Math.Abs(angle) < (Math.PI / 4))
+        {
+          var distanceFromPlayer = Math.Sqrt((x - _updatedManager.Boss.x) * (x - _updatedManager.Boss.x) + (y - _updatedManager.Boss.y) * (y - _updatedManager.Boss.y));
+          if (distanceFromPlayer < 1.7)
+          {
+            _updatedManager.Boss.health--;
           }
         }
       }
@@ -70,14 +89,18 @@ namespace HedgeMazeWithBros.Hubs
 
     public async Task SendRangedAttack(double a)
     {
-      Projectile p = new Projectile((Context.Items["player"] as Player).x, (Context.Items["player"] as Player).y, a);
+      Projectile p = new Projectile((Context.Items["player"] as Player).x - 0.5, (Context.Items["player"] as Player).y - 0.5, a, (Context.Items["player"] as Player).num);
       p.Update(2);
       _updatedManager.Projectiles.Add(p);    
     }
 
     public async Task SendBroMessage(string message)
     {
-      Clients.All.SendAsync("BroMessage", message);
+      var commandResult = CommandHandler.Handle(message, Context.Items["player"] as Player);
+      if (string.Empty == commandResult)
+        Clients.All.SendAsync("BroMessage", message);
+      else
+        Clients.Caller.SendAsync("BroMessage", commandResult);
     }
   }
 }

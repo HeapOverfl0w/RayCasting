@@ -5,22 +5,18 @@ using System.Threading.Tasks;
 
 namespace HedgeMazeWithBros
 {
-    public class Player
+  public class Player : GameObject
+  {
+    public int num { get; set; }
+
+    public int skin { get; set; }
+
+    public bool isEnemy { get; set; }
+    public Player(double x, double y, int num, bool isEnemy = false) : base (x, y, 0)
     {
-        public double x { get; set; }
-        public double y { get; set; }
-
-        public double a { get; set; }
-
-        public int num { get; set; }
-
-        public bool isEnemy { get; set; }
-        public Player(double x, double y, int num, bool isEnemy = false)
-        {
-            this.x = x;
-            this.y = y;
-            this.num = num;
-            this.isEnemy = isEnemy;
-        }
+      this.num = num;
+      this.isEnemy = isEnemy;
+      this.skin = 0;
     }
+  }
 }

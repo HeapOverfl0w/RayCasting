@@ -170,14 +170,22 @@ class RayCaster {
     })
 
     for (let i = 0; i < billboardsToDraw.length; i++) {
-      let texture = level.player;
-      if (billboardsToDraw[i].billboard.isEnemy)
-        texture = level.arrow;
+      let texture = undefined;
+      if (billboardsToDraw[i].billboard.health != undefined)
+        texture = level.boss;
+      else if (billboardsToDraw[i].billboard.dist != undefined)
+        texture = level.projectileTexture(billboardsToDraw[i].billboard.type);
       else if (billboardsToDraw[i].billboard.type != undefined)
         texture = level.billboardTexture(billboardsToDraw[i].billboard.type);
       else if (billboardsToDraw[i].billboard.a != undefined &&
-        (Math.abs(this.oneEightyAngle(billboardsToDraw[i].billboard.a) - this.oneEightyAngle(camera.angle)) < Math.PI * 2/3))
-        texture = level.playerBack;
+        (Math.abs(this.oneEightyAngle(billboardsToDraw[i].billboard.a) - this.oneEightyAngle(camera.angle)) < Math.PI * 2 / 3) && 
+        billboardsToDraw[i].billboard.skin != undefined)
+        texture = level.playerTexture(billboardsToDraw[i].billboard.skin, true);
+      else if (billboardsToDraw[i].billboard.skin != undefined)
+        texture = level.playerTexture(billboardsToDraw[i].billboard.skin, false);
+
+      if (texture == undefined)
+        continue;
                
 
       let z = billboardsToDraw[i].dist * Math.cos(billboardsToDraw[i].angle);

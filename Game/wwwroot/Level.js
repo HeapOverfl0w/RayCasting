@@ -60,6 +60,25 @@ class Level
     this.tallWallIndoor = document.getElementById("tallwallindoor");
     this.weapon2 = document.getElementById("weapon2");
     this.arrow = document.getElementById("arrow");
+
+    this.player1 = document.getElementById("player1");
+    this.playerBack1 = document.getElementById("playerback1");
+    this.player2 = document.getElementById("player2");
+    this.playerBack2 = document.getElementById("playerback2");
+    this.player3 = document.getElementById("player3");
+    this.playerBack3 = document.getElementById("playerback3");
+    this.player4 = document.getElementById("player4");
+    this.playerBack4 = document.getElementById("playerback4");
+    this.player5 = document.getElementById("player5");
+    this.playerBack5 = document.getElementById("playerback5");
+    this.player6 = document.getElementById("player6");
+    this.playerBack6 = document.getElementById("playerback6");
+
+    this.boss = document.getElementById("boss");
+    this.fireball = document.getElementById("fireball");
+
+    this.playerSkins = [this.player, this.player1, this.player2, this.player3, this.player4, this.player5, this.player6];
+    this.playerBackSkins = [this.playerBack, this.playerBack1, this.playerBack2, this.playerBack3, this.playerBack4, this.playerBack5, this.playerBack6];
   }
 
   isWall(x, y)
@@ -147,5 +166,22 @@ class Level
       case 3:
         return this.barrell;
     }
+  }
+
+  projectileTexture(type) {
+    switch (type) {
+      case 1:
+        return this.fireball;
+      default:
+        return this.arrow;
+    }
+  }
+
+  playerTexture(skin, isBack) {
+    if (skin > -1 && skin < this.playerSkins.length) {
+      return isBack ? this.playerBackSkins[skin] : this.playerSkins[skin];
+    }
+    else
+      return isBack ? this.playerBackSkins[0] : this.playerSkins[0];
   }
 }
