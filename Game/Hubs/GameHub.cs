@@ -70,7 +70,7 @@ namespace HedgeMazeWithBros.Hubs
       //boss
       if (_updatedManager.Boss.health > 0)
       {
-        var angle = Math.Atan2(cameraY, cameraX) - Math.Atan2(p.y - y, p.x - x);
+        var angle = Math.Atan2(cameraY, cameraX) - Math.Atan2(_updatedManager.Boss.y - y, _updatedManager.Boss.x - x);
         if (angle < -Math.PI)
           angle += 2 * Math.PI;
         if (angle > Math.PI)
