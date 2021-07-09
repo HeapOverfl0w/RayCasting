@@ -69,9 +69,9 @@ class RayCaster {
       zBuffer.push(rayData);
     }
 
-    ctx.putImageData(this.screenBuffer, 0,0);
-
     this.drawBillboards(ctx, camera, level, zBuffer);
+
+    ctx.putImageData(this.screenBuffer, 0,0);
 
     ctx.save();
     ctx.strokeStyle = "White";
@@ -179,7 +179,7 @@ class RayCaster {
         //let height = floor - ceiling;
         let billboardTexture = level.billboardTexture(level.billboards[i].type);
         let z = distanceFromCamera * Math.cos(angle);
-        let height = (cvsHeight + billboardTexture.height - 16) / z;
+        let height = (cvsHeight + (billboardTexture.height + (cvsHeight * .333))) / z;
         let floor = (cvsHeight + 32) / 2 * (1 + 1/z) - 15;
         let ceiling = floor - height;
         
@@ -196,7 +196,28 @@ class RayCaster {
           {
             if (zBuffer[column].distance >= distanceFromCamera)
             {
-              ctx.drawImage(billboardTexture, Math.floor(billboardTexture.width * sampleX), 0, 1, billboardTexture.height, column, ceiling, 1, height);
+              let bufferHeight = Math.floor(height);
+              let bufferCeiling = Math.ceil(ceiling);
+              if (height > cvsHeight)
+                bufferHeight = cvsHeight;
+              if (ceiling < 0)
+                bufferCeiling = 0;
+              for (let y = 0; y < bufferHeight; y++)
+              {
+                let ySample = Math.floor(y/height * billboardTexture.height);
+                if (ceiling < 0)
+                  ySample = Math.floor((y - ceiling)/height * billboardTexture.height);
+                let xSample = Math.floor(billboardTexture.width * sampleX);
+                let textureSample = 4 * (ySample * billboardTexture.width + xSample);
+                let screenBufferSample = 4 * ((bufferCeiling + y) * cvsWidth + column);
+                if (billboardTexture.data[textureSample + 3] != 0) {
+                  this.screenBuffer.data[screenBufferSample] = billboardTexture.data[textureSample];
+                  this.screenBuffer.data[screenBufferSample + 1] = billboardTexture.data[textureSample + 1];
+                  this.screenBuffer.data[screenBufferSample + 2] = billboardTexture.data[textureSample + 2];
+                  this.screenBuffer.data[screenBufferSample + 3] = billboardTexture.data[textureSample + 3];
+                }
+              }
+              //ctx.drawImage(billboardTexture, Math.floor(billboardTexture.width * sampleX), 0, 1, billboardTexture.height, column, ceiling, 1, height);
             }
           }
         }

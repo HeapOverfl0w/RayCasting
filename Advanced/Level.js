@@ -47,7 +47,7 @@ class Level
     switch(type)
     {
       case 1:
-        return this.billboardTextures;
+        return this.data.textures["billboards"];
     }
   }
 }
