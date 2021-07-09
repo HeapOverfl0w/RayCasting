@@ -17,13 +17,14 @@
 <script src="Camera.js"></script>
 <script src="Level.js"></script>
 <script src="RayCaster.js"></script>
+<script src="Data.js"></script>
 <script>
   var cvs = document.getElementById("scene");
   var main;
 
   window.onload = function() {
-    cvs.width = 160;
-    cvs.height = 120;
+    cvs.width = 800;
+    cvs.height = 600;
     let aspectRatio = cvs.width / cvs.height;
     cvs.style.width = window.innerHeight * aspectRatio + "px";
     cvs.style.height = window.innerHeight + "px";

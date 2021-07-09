@@ -1,13 +1,14 @@
 class Level
 {
-  constructor(levelArray)
+  constructor(levelArray, data)
   {
     this.levelArray = levelArray;
     this.width = levelArray.length;
     this.height = levelArray[0].length;
-    this.billboards = [{type: 1, x: 2, y: 2}]
+    this.billboards = [{type: 1, x: 2, y: 2}];
+    this.data = data;
 
-    this.loadTextures()
+    this.loadTextures();
   }
 
   loadTextures()
@@ -36,7 +37,7 @@ class Level
       switch(this.levelArray[x][y])
       {
         case 1:
-          return this.wallTextures;
+          return this.data.textures["walls"];
       }
     }
   }

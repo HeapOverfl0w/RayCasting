@@ -10,10 +10,13 @@ class RayCaster {
   {
     let cvsWidth = ctx.canvas.width;
     let cvsHeight = ctx.canvas.height;
+    this.renderBuffer = new Array(4 * cvsWidth * cvsHeight);
     let aspectRatio = cvsWidth / cvsHeight;
     ctx.fillStyle = this.shadeColor;
     ctx.fillRect(0,0, cvsWidth, cvsHeight);
     this.drawSkybox(ctx, camera, level);
+
+    this.screenBuffer = ctx.getImageData(0,0,cvsWidth,cvsHeight);
 
     let zBuffer = [];
 
@@ -31,13 +34,33 @@ class RayCaster {
       let ceiling = floor - wallLength;
 
       rayData.height = wallLength;
-      rayData.ceiling = ceiling;
+      rayData.ceiling = Math.ceil(ceiling);
       rayData.rayAngle = rayAngle;
       rayData.column = x;
 
       if (rayData.distance != this.maxViewDistance)
-      {        
-        ctx.drawImage(rayData.texture, Math.floor(rayData.texture.width * rayData.sample), 0, 1, rayData.texture.height, x, ceiling, 1, wallLength);
+      {
+        let bufferHeight = Math.floor(rayData.height);
+        let bufferCeiling = Math.ceil(rayData.ceiling);
+        if (rayData.height > cvsHeight)
+          bufferHeight = cvsHeight;
+        if (rayData.ceiling < 0)
+          bufferCeiling = 0;
+        for (let y = 0; y < bufferHeight; y++)
+        {
+          let ySample = Math.floor(y/rayData.height * rayData.texture.height);
+          if (rayData.ceiling < 0)
+            ySample = Math.floor((y - rayData.ceiling)/rayData.height * rayData.texture.height);
+          let xSample = Math.floor(rayData.texture.width * rayData.sample);
+          let textureSample = 4 * (ySample * rayData.texture.width + xSample);
+          let screenBufferSample = 4 * ((bufferCeiling + y) * cvsWidth + x);
+          this.screenBuffer.data[screenBufferSample] = rayData.texture.data[textureSample];
+          this.screenBuffer.data[screenBufferSample + 1] = rayData.texture.data[textureSample + 1];
+          this.screenBuffer.data[screenBufferSample + 2] = rayData.texture.data[textureSample + 2];
+          this.screenBuffer.data[screenBufferSample + 3] = 255;
+        }
+        
+        //ctx.drawImage(rayData.texture, Math.floor(rayData.texture.width * rayData.sample), 0, 1, rayData.texture.height, x, ceiling, 1, wallLength);
         if (this.useShade)
           this.drawLighting(ctx, rayData);
       }
@@ -45,6 +68,8 @@ class RayCaster {
 
       zBuffer.push(rayData);
     }
+
+    ctx.putImageData(this.screenBuffer, 0,0);
 
     this.drawBillboards(ctx, camera, level, zBuffer);
 
@@ -194,17 +219,24 @@ class RayCaster {
 
   drawFloor(ctx, camera, floorStart, column, rayData, level)
   {
-    let texture = level.floors;
+    let texture = level.data.textures["floors"];
     let cvsHeight = ctx.canvas.height;
-    let halfCvsHeight = (cvsHeight + 32) >> 1;
+    let cvsWidth = ctx.canvas.width;
+    let halfCvsHeight = (cvsHeight) >> 1;
     let floorFloorStart = Math.round(floorStart);
     for (let iy = floorFloorStart; iy < cvsHeight; iy++)
     {
-      let distance = (75 / (iy - halfCvsHeight + 15));
+      let distance = (300 / (iy - halfCvsHeight));
       let x = distance * rayData.rayAngleX + camera.x;
       let y = distance * rayData.rayAngleY + camera.y;
 
-      ctx.drawImage(texture, Math.floor((x % 1) * texture.width), Math.floor((y % 1) * texture.height), 1, 1, column, iy, 1,1);
+      let textureSample = 4 * (Math.floor((y % 1) * texture.height) * texture.width + Math.floor((x % 1) * texture.width));
+      let screenBufferSample = 4 * (cvsWidth * iy + column);
+      this.screenBuffer.data[screenBufferSample] = texture.data[textureSample];
+      this.screenBuffer.data[screenBufferSample + 1] = texture.data[textureSample + 1];
+      this.screenBuffer.data[screenBufferSample + 2] = texture.data[textureSample + 2];
+      this.screenBuffer.data[screenBufferSample + 3] = 255;
+      //ctx.drawImage(texture, Math.floor((x % 1) * texture.width), Math.floor((y % 1) * texture.height), 1, 1, column, iy, 1,1);
       if (this.useShade)
       {
         let shade = this.shade(distance)
