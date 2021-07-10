@@ -28,6 +28,10 @@ class Level
       return this.levelArray[x][y] > 0 && this.levelArray[x][y] < 100;
   }
 
+  isPassable(x, y) {
+    return !this.isWall(x, y);
+  }
+
   wallTextureAt(x, y)
   {
     if (x < 0 || x >= this.levelArray.length || y < 0 || y >= this.levelArray[x].length)

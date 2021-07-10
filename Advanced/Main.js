@@ -43,6 +43,13 @@ class Main
     }
   }
 
+  handleMouseMove(movementx) {
+    let angle = movementx * 0.1 * Math.PI / 180
+    this.camera.angle = (this.camera.angle + angle) % (2 * Math.PI);
+    if (this.angle < 0)
+      this.camera.angle = this.camera.angle + (2 * Math.PI);
+  }
+
   handleKeyDown(keyCode)
   {
     if (!this.keysDown.includes(keyCode))
@@ -60,5 +67,10 @@ class Main
     
     if (removeAt != -1)
       this.keysDown.splice(removeAt,1);
+
+    if (keyCode == 65 || keyCode == 68) {
+      if (!this.keysDown.includes(65) && !this.keysDown.includes(68))
+        this.camera.isStrafing = false;
+    }
   }
 }

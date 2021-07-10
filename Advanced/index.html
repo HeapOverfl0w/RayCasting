@@ -21,6 +21,7 @@
 <script>
   var cvs = document.getElementById("scene");
   var main;
+  var pointerLocked = false;
 
   window.onload = function() {
     cvs.width = 800;
@@ -41,10 +42,27 @@
   };
 
   document.addEventListener('keydown', function(event) {
-    main.handleKeyDown(event.keyCode);
+    if (main != undefined)
+      main.handleKeyDown(event.keyCode);
   });
 
   document.addEventListener('keyup', function(event) {
-    main.handleKeyUp(event.keyCode);
-  })
+    if (main != undefined)
+      main.handleKeyUp(event.keyCode);
+  });
+
+  document.addEventListener('mousemove', function (event) {
+    if (main != undefined && pointerLocked)
+      main.handleMouseMove(event.movementX);
+  });
+
+  document.addEventListener('mouseup', function (event) {
+    if (main != undefined && !pointerLocked) 
+      cvs.requestPointerLock();
+      //main.handleMouseUp();
+  });
+
+  document.addEventListener('pointerlockchange', function (event) {
+    pointerLocked = !pointerLocked;
+  });
 </script>
